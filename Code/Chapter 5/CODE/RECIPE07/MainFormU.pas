@@ -87,7 +87,8 @@ procedure TMainForm.DefinePrivateConnDef;
 var
   LParams: TStringList;
 const
-  DBFILENAME = 'C:\ProgramData\Embarcadero\InterBase\gds_db\examples\database\employee.gdb';
+  DBFILENAME =
+    'C:\ProgramData\Embarcadero\InterBase\gds_db\examples\database\employee.gdb';
 begin
   LParams := TStringList.Create;
   try

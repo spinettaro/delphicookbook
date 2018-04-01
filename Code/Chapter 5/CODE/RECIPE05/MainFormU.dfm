@@ -24,8 +24,6 @@ object MainForm: TMainForm
     Anchors = [akLeft, akTop, akRight, akBottom]
     ReadOnly = True
     TabOrder = 0
-    ExplicitWidth = 333
-    ExplicitHeight = 232
   end
   object btnExceptionDef: TButton
     Left = 8
