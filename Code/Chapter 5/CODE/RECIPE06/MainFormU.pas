@@ -3,126 +3,119 @@ unit MainFormU;
 interface
 
 uses
-	Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-	System.Classes, Vcl.Graphics,
-	Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, System.Threading;
+  Winapi.Windows, Winapi.Messages, System.SysUtils,
+  System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
 
 type
-	TMainForm = class(TForm)
-		EditValue: TEdit;
-		EditResultInEuro: TEdit;
-		btnConvert: TButton;
-		cbSymbol: TComboBox;
-		Label1: TLabel;
-		Label2: TLabel;
-		Label3: TLabel;
-		procedure btnConvertClick(Sender: TObject);
-		procedure FormCreate(Sender: TObject);
-		procedure cbSymbolClick(Sender: TObject);
-	private
-		FConversionRate: IFuture<Currency>;
-		procedure StartFuture;
-	public
-		{ Public declarations }
-	end;
+  TMainForm = class(TForm)
+    mmLog: TMemo;
+    btnSimple: TButton;
+    btnWithException: TButton;
+    btnExceptionDef: TButton;
+    btnRESTRequest: TButton;
+    procedure btnSimpleClick(Sender: TObject);
+    procedure btnWithExceptionClick(Sender: TObject);
+    procedure btnExceptionDefClick(Sender: TObject);
+    procedure btnRESTRequestClick(Sender: TObject);
+  private
+    procedure Log(const Value: String);
+  public
+    { Public declarations }
+  end;
 
 var
-	MainForm: TMainForm;
+  MainForm: TMainForm;
 
 implementation
 
-uses
-	System.Net.HTTPClient, System.JSON, AsyncTask;
-
 {$R *.dfm}
 
+uses
+  AsyncTask,
+  System.Net.HttpClient;
 
-procedure TMainForm.btnConvertClick(Sender: TObject);
+procedure TMainForm.btnSimpleClick(Sender: TObject);
 begin
-	if not Assigned(FConversionRate) then
-	begin
-		ShowMessage('Please, select a currency symbol');
-		Exit;
-	end;
-	EditResultInEuro.Text :=
-		FormatCurr('€ #,###,##0.00', FConversionRate.Value *
-		StrToFloat(EditValue.Text));
+  Async.Run<Integer>(
+    function: Integer
+    begin
+      Sleep(2000);
+      Result := Random(100);
+    end,
+    procedure(const Value: Integer)
+    begin
+      Log('RESULT: ' + Value.ToString);
+    end);
 end;
 
-procedure TMainForm.FormCreate(Sender: TObject);
+procedure TMainForm.btnWithExceptionClick(Sender: TObject);
 begin
-	Async.Run<TStringList>(
-		function: TStringList
-		var
-			LHTTP: THTTPClient;
-			LResp: IHTTPResponse;
-			LJObj: TJSONObject;
-			LJRates: TJSONObject;
-			I: Integer;
-		begin
-			LHTTP := THTTPClient.Create;
-			try
-				LResp := LHTTP.Get('http://api.fixer.io/latest');
-				LJObj := TJSONObject.ParseJSONValue
-					(LResp.ContentAsString(TEncoding.UTF8)) as TJSONObject;
-				try
-					LJRates := LJObj.GetValue<TJSONObject>('rates');
-					Result := TStringList.Create;
-					for I := 0 to LJRates.Count - 1 do
-					begin
-						Result.Add(LJRates.Pairs[I].JsonString.Value);
-					end;
-					Result.Sort;
-				finally
-					LJObj.Free;
-				end;
-			finally
-				LHTTP.Free;
-			end;
-		end,
-		procedure(const Strings: TStringList)
-		begin
-			cbSymbol.Items.Assign(Strings);
-		end);
+  Async.Run<String>(
+    function: String
+    begin
+      raise Exception.Create('This is an error message');
+    end,
+    procedure(const Value: String)
+    begin
+      // never called
+    end,
+    procedure(const Ex: Exception)
+    begin
+      Log('Exception: ' + sLineBreak + Ex.Message);
+    end);
 end;
 
-procedure TMainForm.cbSymbolClick(Sender: TObject);
+procedure TMainForm.btnExceptionDefClick(Sender: TObject);
 begin
-	StartFuture;
+  Async.Run<String>(
+    function: String
+    begin
+      raise Exception.Create('Handled by the default Exception handler');
+    end,
+    procedure(const Value: String)
+    begin
+      // never called
+    end);
 end;
 
-procedure TMainForm.StartFuture;
-var
-	LBaseSymbol: String;
+procedure TMainForm.btnRESTRequestClick(Sender: TObject);
 begin
-	EditResultInEuro.Clear;
-	if cbSymbol.ItemIndex < 0 then
-		Exit;
+  Async.Run<String>(
+    function: String
+    var
+      LHTTP: THTTPClient;
+      LResp: IHTTPResponse;
+    begin
+      LHTTP := THTTPClient.Create;
+      try
+        LResp := LHTTP.Get('http://www.timeapi.org/utc/no w');
+        if LResp.StatusCode = 200 then
+        begin
+          Result := LResp.ContentAsString(TEncoding.UTF8)
+        end
+        else
+        begin
+          raise Exception.CreateFmt('Cannot get time. HTTP %d - %s',
+            [LResp.StatusCode, LResp.StatusText]);
+        end;
+      finally
+        LHTTP.Free;
+      end;
+    end,
+    procedure(const DateAndTime: String)
+    begin
+      Log('Current Date Time: ' + DateAndTime);
+    end,
+    procedure(const Ex: Exception)
+    begin
+      Log('Exception: ' + sLineBreak + Ex.Message);
+    end);
+end;
 
-	LBaseSymbol := cbSymbol.Text;
-	FConversionRate := TTask.Future<Currency>(
-		function: Currency
-		var
-			LHTTP: THTTPClient;
-			LResp: IHTTPResponse;
-			LJObj: TJSONObject;
-		begin
-			LHTTP := THTTPClient.Create;
-			try
-				LResp := LHTTP.Get(
-					Format('http://api.fixer.io/latest?base=%s&symbols=EUR',
-					[LBaseSymbol]));
-				LJObj := TJSONObject.ParseJSONValue
-					(LResp.ContentAsString(TEncoding.UTF8)) as TJSONObject;
-				try
-					Result := LJObj.GetValue<TJSONNumber>('rates.EUR').AsDouble;
-				finally
-					LJObj.Free;
-				end;
-			finally
-				LHTTP.Free;
-			end;
-		end);
+procedure TMainForm.Log(const Value: String);
+begin
+  mmLog.Lines.Add(TimeToStr(now) + ' - ' + Value);
 end;
 
 end.

@@ -3,119 +3,163 @@ unit MainFormU;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils,
-  System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  System.SysUtils, System.Types, System.UITypes, System.Classes,
+  System.Variants,
+  FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
+  FMX.Objects, Generics.Collections,
+  SignalGeneratorU, Data.Bind.EngExt, FMX.Bind.DBEngExt, System.Rtti,
+  System.Bindings.Outputs, FMX.Bind.Editors,
+  Data.Bind.Components, FMX.Controls.Presentation, System.Math.Vectors;
 
 type
   TMainForm = class(TForm)
-    mmLog: TMemo;
-    btnSimple: TButton;
-    btnWithException: TButton;
-    btnExceptionDef: TButton;
-    btnRESTRequest: TButton;
-    procedure btnSimpleClick(Sender: TObject);
-    procedure btnWithExceptionClick(Sender: TObject);
-    procedure btnExceptionDefClick(Sender: TObject);
-    procedure btnRESTRequestClick(Sender: TObject);
+    Timer1: TTimer;
+    pb: TPaintBox;
+    TrackBar1: TTrackBar;
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure pbPaint(Sender: TObject; Canvas: TCanvas);
+    procedure FormResize(Sender: TObject);
+    procedure TrackBar1Change(Sender: TObject);
   private
-    procedure Log(const Value: String);
+    FValuesQueue: TThreadedQueue<Extended>;
+    FDisplayList: TList<Extended>;
+    Th: TSignalGeneratorThread;
+    FMaxValuesCount: Integer;
+    procedure SetMaxValuesCount(const Value: Integer);
+    procedure DrawOpenPolygon(const Canvas: TCanvas; const Points: TPolygon;
+      const AOpacity: Single);
   public
-    { Public declarations }
+    property MaxValuesCount: Integer read FMaxValuesCount
+      write SetMaxValuesCount;
   end;
 
 var
   MainForm: TMainForm;
+{$R *.fmx}
 
 implementation
 
-{$R *.dfm}
-
 uses
-  AsyncTask,
-  System.Net.HttpClient;
+  System.SyncObjs;
 
-procedure TMainForm.btnSimpleClick(Sender: TObject);
+procedure TMainForm.DrawOpenPolygon(const Canvas: TCanvas;
+  const Points: TPolygon; const AOpacity: Single);
+var
+  I: Integer;
+  LPath: TPathData;
 begin
-  Async.Run<Integer>(
-    function: Integer
-    begin
-      Sleep(2000);
-      Result := Random(100);
-    end,
-    procedure(const Value: Integer)
-    begin
-      Log('RESULT: ' + Value.ToString);
-    end);
+  if Length(Points) = 0 then
+    Exit;
+  LPath := TPathData.Create;
+  try
+    LPath.MoveTo(Points[0]);
+    for I := 1 to High(Points) do
+      LPath.LineTo(Points[I]);
+    Canvas.DrawPath(LPath, AOpacity);
+  finally
+    LPath.Free;
+  end;
 end;
 
-procedure TMainForm.btnWithExceptionClick(Sender: TObject);
+procedure TMainForm.FormCreate(Sender: TObject);
+var
+  I: Integer;
 begin
-  Async.Run<String>(
-    function: String
-    begin
-      raise Exception.Create('This is an error message');
-    end,
-    procedure(const Value: String)
-    begin
-      // never called
-    end,
-    procedure(const Ex: Exception)
-    begin
-      Log('Exception: ' + sLineBreak + Ex.Message);
-    end);
+  FMaxValuesCount := 200;
+  TrackBar1.Value := MaxValuesCount;
+  FValuesQueue := TThreadedQueue<Extended>.Create(1000, 1000, 1);
+  FDisplayList := TList<Extended>.Create;
+
+  for I := 0 to FMaxValuesCount - 1 do
+    FDisplayList.Add(0);
+
+  Th := TSignalGeneratorThread.Create(FValuesQueue);
 end;
 
-procedure TMainForm.btnExceptionDefClick(Sender: TObject);
+procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  Async.Run<String>(
-    function: String
-    begin
-      raise Exception.Create('Handled by the default Exception handler');
-    end,
-    procedure(const Value: String)
-    begin
-      // never called
-    end);
+  Th.Terminate;
+  Th.WaitFor;
+  Th.Free;
+  FValuesQueue.Free;
 end;
 
-procedure TMainForm.btnRESTRequestClick(Sender: TObject);
+procedure TMainForm.FormResize(Sender: TObject);
 begin
-  Async.Run<String>(
-    function: String
-    var
-      LHTTP: THTTPClient;
-      LResp: IHTTPResponse;
-    begin
-      LHTTP := THTTPClient.Create;
-      try
-        LResp := LHTTP.Get('http://www.timeapi.org/utc/no w');
-        if LResp.StatusCode = 200 then
-        begin
-          Result := LResp.ContentAsString(TEncoding.UTF8)
-        end
-        else
-        begin
-          raise Exception.CreateFmt('Cannot get time. HTTP %d - %s',
-            [LResp.StatusCode, LResp.StatusText]);
-        end;
-      finally
-        LHTTP.Free;
-      end;
-    end,
-    procedure(const DateAndTime: String)
-    begin
-      Log('Current Date Time: ' + DateAndTime);
-    end,
-    procedure(const Ex: Exception)
-    begin
-      Log('Exception: ' + sLineBreak + Ex.Message);
-    end);
+  pb.Repaint;
 end;
 
-procedure TMainForm.Log(const Value: String);
+procedure TMainForm.pbPaint(Sender: TObject; Canvas: TCanvas);
+var
+  Values: TPolygon;
+  I: Integer;
+  XStep: Extended;
+  YCenter: Integer;
 begin
-  mmLog.Lines.Add(TimeToStr(now) + ' - ' + Value);
+  // prepare scene
+  Canvas.BeginScene;
+  Canvas.Stroke.Kind := TBrushKind.Solid;
+  Canvas.Stroke.Thickness := 1;
+
+  // setup the canvas with a white background
+  Canvas.Fill.Color := TAlphaColorRec.White;
+  Canvas.FillRect(RectF(0, 0, Canvas.Width, Canvas.Height), 0, 0, [], 1);
+
+  // write the blue top-left labels
+  Canvas.Fill.Color := TAlphaColorRec.Blue;
+  Canvas.FillText(RectF(10, 10, Canvas.Width, 40),
+    'Resolution: ' + MaxValuesCount.ToString + ' points', False, 1, [],
+    TTextAlign.Leading, TTextAlign.Leading);
+  Canvas.FillText(RectF(10, 25, Canvas.Width, 40), 'Currently used points: ' +
+    FDisplayList.Count.ToString + ' points', False, 1, [], TTextAlign.Leading,
+    TTextAlign.Leading);
+
+  // preparing points to draw
+  SetLength(Values, FDisplayList.Count);
+  XStep := Canvas.Width / FDisplayList.Count;
+  YCenter := Canvas.Height div 2;
+  for I := 0 to FDisplayList.Count - 1 do
+  begin
+    Values[I].X := XStep * I;
+    Values[I].Y := YCenter - FDisplayList[I];
+  end;
+
+  // setup the points aspect
+  Canvas.Stroke.Thickness := 2;
+  Canvas.Stroke.Color := TAlphaColorRec.Red;
+  // draw the points
+  DrawOpenPolygon(Canvas, Values, 1);
+
+  // actually update the canvas
+  Canvas.EndScene;
+end;
+
+procedure TMainForm.SetMaxValuesCount(const Value: Integer);
+begin
+  FMaxValuesCount := Value;
+  pb.Repaint;
+end;
+
+procedure TMainForm.Timer1Timer(Sender: TObject);
+var
+  Value: Extended;
+  QueueSize: Integer;
+begin
+  // put readed values in the display list... max FMaxValuesCount values
+  while FValuesQueue.PopItem(QueueSize, Value) = wrSignaled do
+    FDisplayList.Add(Value);
+  // remove values from the head of the list...
+  while FDisplayList.Count > FMaxValuesCount do
+    FDisplayList.Delete(0);
+  // RefreshGraph;
+  pb.Repaint;
+end;
+
+procedure TMainForm.TrackBar1Change(Sender: TObject);
+begin
+  MaxValuesCount := Trunc(TrackBar1.Value);
 end;
 
 end.

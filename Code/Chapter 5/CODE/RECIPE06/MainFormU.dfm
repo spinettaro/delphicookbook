@@ -1,10 +1,9 @@
 object MainForm: TMainForm
-  Left = 598
-  Top = 207
-  BorderStyle = bsToolWindow
-  Caption = 'Euro Converter'
-  ClientHeight = 117
-  ClientWidth = 362
+  Left = 0
+  Top = 0
+  Caption = 'TTask'
+  ClientHeight = 217
+  ClientWidth = 343
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,66 +11,55 @@ object MainForm: TMainForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesigned
-  OnCreate = FormCreate
+  DesignSize = (
+    343
+    217)
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
-    Left = 16
-    Top = 13
-    Width = 81
-    Height = 13
-    Caption = 'Currency Symbol'
-  end
-  object Label2: TLabel
-    Left = 143
-    Top = 13
-    Width = 26
-    Height = 13
-    Caption = 'Value'
-  end
-  object Label3: TLabel
-    Left = 143
-    Top = 69
-    Width = 68
-    Height = 13
-    Caption = 'Value in EURO'
-  end
-  object EditValue: TEdit
-    Left = 143
-    Top = 32
-    Width = 121
-    Height = 21
-    Alignment = taRightJustify
-    NumbersOnly = True
-    TabOrder = 1
-  end
-  object EditResultInEuro: TEdit
-    Left = 143
-    Top = 88
-    Width = 121
-    Height = 21
-    Alignment = taRightJustify
-    NumbersOnly = True
+  object mmLog: TMemo
+    Left = 86
+    Top = 8
+    Width = 249
+    Height = 201
+    Anchors = [akLeft, akTop, akRight, akBottom]
     ReadOnly = True
-    TabOrder = 3
-  end
-  object btnConvert: TButton
-    Left = 270
-    Top = 31
-    Width = 74
-    Height = 23
-    Caption = 'Convert'
-    TabOrder = 2
-    OnClick = btnConvertClick
-  end
-  object cbSymbol: TComboBox
-    Left = 16
-    Top = 32
-    Width = 121
-    Height = 21
-    Style = csDropDownList
     TabOrder = 0
-    OnClick = cbSymbolClick
+  end
+  object btnExceptionDef: TButton
+    Left = 8
+    Top = 90
+    Width = 72
+    Height = 35
+    Caption = 'Exceptions (Default)'
+    TabOrder = 1
+    WordWrap = True
+    OnClick = btnExceptionDefClick
+  end
+  object btnRESTRequest: TButton
+    Left = 8
+    Top = 131
+    Width = 72
+    Height = 35
+    Caption = 'REST Call'
+    TabOrder = 2
+    OnClick = btnRESTRequestClick
+  end
+  object btnSimple: TButton
+    Left = 8
+    Top = 8
+    Width = 72
+    Height = 35
+    Caption = 'Simple'
+    TabOrder = 3
+    OnClick = btnSimpleClick
+  end
+  object btnWithException: TButton
+    Left = 8
+    Top = 49
+    Width = 72
+    Height = 35
+    Caption = 'Exceptions'
+    TabOrder = 4
+    OnClick = btnWithExceptionClick
   end
 end
