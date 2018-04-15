@@ -33,6 +33,7 @@ implementation
 
 uses
   AsyncTask,
+  System.JSON,
   System.Net.HttpClient;
 
 procedure TMainForm.btnSimpleClick(Sender: TObject);
@@ -89,7 +90,7 @@ begin
     begin
       LHTTP := THTTPClient.Create;
       try
-        LResp := LHTTP.Get('http://www.timeapi.org/utc/no w');
+        LResp := LHTTP.Get('http://worldclockapi.com/api/json/utc/now');
         if LResp.StatusCode = 200 then
         begin
           Result := LResp.ContentAsString(TEncoding.UTF8)
@@ -103,9 +104,16 @@ begin
         LHTTP.Free;
       end;
     end,
-    procedure(const DateAndTime: String)
+    procedure(const AJSONStringResp: String)
+    var
+      LJSONObj: TJSONObject;
     begin
-      Log('Current Date Time: ' + DateAndTime);
+      LJSONObj := TJSONObject.ParseJSONValue(AJSONStringResp) as TJSONObject;
+      try
+        Log('Current Date Time: ' + LJSONObj.GetValue('currentDateTime').Value);
+      finally
+        LJSONObj.Free;
+      end;
     end,
     procedure(const Ex: Exception)
     begin
