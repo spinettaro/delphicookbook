@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<title>Book Shop</title>
+	<link rel="stylesheet" href="css/milligram.css" />
+	<link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+
+	<div class="header">
+		<button class="button" id="btnAdd">New Book</button>
+	</div>
+
+
+	<div class="leftArea">
+		<ul id="booksList"></ul>
+	</div>
+
+	<form id="bookForm">
+
+		<div class="mainArea">
+
+			<label>Id:</label>
+			<input id="bookId" name="id" type="text" style="width: 50px" disabled />
+
+			<label>Title:</label>
+			<input type="text" id="title" name="title" />
+			
+			<label>Author:</label>
+			<input type="text" id="author" name="author" required>			
+
+			<label>Year:</label>
+			<input type="number" id="year" name="year" />
+
+			<label>Number of pages:</label>
+			<input type="number" id="number_of_pages" name="number_of_pages" />
+
+			
+			<div class="padding02">
+				<button class="button" id="btnSave">Save</button>
+				<button class="button" id="btnDelete">Delete</button>
+			</div>
+		</div>
+
+		<div class="rightArea">
+
+			<img id="pic" height="300" />
+
+			<label>Plot:</label>
+			<textarea id="plot" name="plot"></textarea>
+		</div>
+
+	</form>
+
+	<script src="js/jquery-1.7.1.min.js"></script>
+	<script src="js/main.js"></script>
+
+	<div class="footer textcenter padding02">The client code of this demo is slightly based on
+		<a target="_blank" href="http://coenraets.org/blog/2011/12/restful-services-with-jquery-php-and-the-slim-framework/">"RESTful services with jQuery, PHP and the Slim Framework"</a>
+	</div>
+</body>
+
+</html>
