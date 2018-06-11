@@ -10,7 +10,7 @@ uses System.SysUtils, System.Classes, Web.HTTPApp, Data.DBXJSON,
   FireDAC.DApt, FireDAC.Phys.IBBase, FireDAC.Phys.IB,
   Data.DB, FireDAC.Comp.DataSet, FireDAC.Comp.Client, FireDAC.Moni.Base,
   FireDAC.Moni.FlatFile, FireDAC.Moni.Custom, System.JSON,
-  FireDAC.Phys.IBDef, FireDAC.VCLUI.Wait;
+  FireDAC.Phys.IBDef, FireDAC.VCLUI.Wait, MVCFramework.Serializer.JSON;
 
 type
   TwmMain = class(TWebModule)
@@ -30,7 +30,9 @@ type
       Response: TWebResponse; var Handled: Boolean);
     procedure ConnectionBeforeConnect(Sender: TObject);
     procedure WebModuleCreate(Sender: TObject);
+    procedure WebModuleDestroy(Sender: TObject);
   private
+    FSerializer: TMVCJSONSerializer;
     procedure PrepareResponse(AJSONValue: TJSONValue;
       AWebResponse: TWebResponse);
   end;
@@ -44,6 +46,7 @@ implementation
 
 uses
   MVCFramework.DataSet.Utils, {this unit comes from delphimvcframework project}
+  MVCFramework.Serializer.Commons,
   System.RegularExpressions,
   System.IOUtils;
 
@@ -67,6 +70,7 @@ var
   JPeople: TJSONArray;
   SQL: string;
   OrderBy: string;
+  JObj: TJSONObject;
 begin
   SQL := 'SELECT * FROM PEOPLE ';
   OrderBy := Request.QueryFields.Values['jtSorting'].Trim.ToUpper;
@@ -83,7 +87,14 @@ begin
   // execute query and prepare response
   qryPeople.Open(SQL);
   try
-    JPeople := TJSONObject.ParseJSONValue(qryPeople.AsJSONArray) as TJSONArray;
+    JPeople := TJSONArray.Create;
+    while not qryPeople.Eof do
+    begin
+      JObj := TJSONObject.Create;
+      FSerializer.DataSetToJSONObject(qryPeople, JObj, TMVCNameCase.ncLowerCase, []);
+      JPeople.Add(JObj);
+      qryPeople.Next;
+    end;
   finally
     qryPeople.Close;
   end;
@@ -130,7 +141,8 @@ begin
   // execute query and prepare response
   qryPeople.Open('SELECT * FROM PEOPLE WHERE ID = ?', [LastID]);
   try
-    JPeople := TJSONObject.ParseJSONValue(qryPeople.AsJSONObject) as TJSONObject;
+    JPeople := TJSONObject.Create;
+    FSerializer.DataSetToJSONObject(qryPeople, JPeople, TMVCNameCase.ncLowerCase, []);
     PrepareResponse(JPeople, Response);
   finally
     qryPeople.Close;
@@ -168,8 +180,14 @@ end;
 
 procedure TwmMain.WebModuleCreate(Sender: TObject);
 begin
+  FSerializer := TMVCJSONSerializer.Create;
   WebFileDispatcher1.RootDirectory := TPath.GetDirectoryName
     (WebApplicationFileName) + '\www';
+end;
+
+procedure TwmMain.WebModuleDestroy(Sender: TObject);
+begin
+  FSerializer.Free;
 end;
 
 end.
