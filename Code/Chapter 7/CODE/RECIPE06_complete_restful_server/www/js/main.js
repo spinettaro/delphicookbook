@@ -11,20 +11,8 @@ $(document).ready(function(){
   // Nothing to delete in initial application state
   $('#btnDelete').hide();
 
-  // Register listeners
-  $('#btnSearch').click(function() {
-      search($('#searchKey').val());
-      return false;
-  });
-
-  // Trigger search when pressing 'Return' on search key input field
-  $('#searchKey').keypress(function(e){
-      if(e.which == 13) {
-          search($('#searchKey').val());
-          e.preventDefault();
-          return false;
-      }
-  });
+  
+  // Register listeners for add a book
 
   $('#btnAdd').click(function() {
       newBook();
@@ -59,14 +47,6 @@ $(document).ready(function(){
 
 });
 
-
-function search(searchKey) {
-	if (searchKey == '')
-		findAll();
-	else
-		findByName(searchKey);
-}
-
 function newBook() {
 	$('#btnDelete').hide();
 	currentBook = {};
@@ -79,16 +59,6 @@ function findAll() {
 		type: 'GET',
 		url: rootURL,
 		dataType: "json", // data type of response
-		success: renderList
-	});
-}
-
-function findByName(searchKey) {
-	console.log('findByName: ' + searchKey);
-	$.ajax({
-		type: 'GET',
-		url: rootURL + '/search/' + searchKey,
-		dataType: "json",
 		success: renderList
 	});
 }
@@ -118,6 +88,7 @@ function addBook() {
 		data: formToJSON(),
 		success: function(data, textStatus, jqXHR){
 			alert('Book created successfully');
+			findAll();
 			$('#btnDelete').show();
 			$('#bookId').val(data.id);
 			findById(data.id);
@@ -140,6 +111,7 @@ function updateBook() {
 		success: function(data, textStatus, jqXHR){
             debugger;
 			alert('Book updated successfully');
+			findAll();
 		},
 		error: function(jqXHR, textStatus, errorThrown){
 			alert('updateBook error: ' + textStatus);
@@ -167,9 +139,21 @@ function renderList(data) {
 	//var list = data == null ? [] : (data.book instanceof Array ? data.book : [data.book]);
     //debugger;
     var list = data;
-	$('#booksList li').remove();
+	$('#booksList div').remove();
 	$.each(list, function(index, book) {
-		$('#booksList').append('<li><a href="#" data-identity="' + book.id + '">'+book.title+'</a></li>');
+		$('#booksList').append(`<div class="col-4">
+		<div class="card">
+			<img class="card-img-top img-responsive" src="./pics/generic.jpg" alt="Card image cap">
+			<div class="card-body">
+				<h5 class="card-title">${book.title}</h5>
+				<p class="card-text">${book.plot}</p>
+				<p> <small class="font-weight-bold"> Author </small> <span class="badge badge-secondary">${book.author}</span></p>
+				<p> <small class="font-weight-bold"> Year </small> <span class="badge badge-secondary">${book.year}</span></p>
+				<p> <small class="font-weight-bold"> Pages </small> <span class="badge badge-secondary">${book.number_of_pages}</span></p>
+				<a href="#" class="btn btn-warning" data-identity="${book.id}">Edit</a>
+			</div>
+		</div>
+	</div>`);		
 	});
 }
 
