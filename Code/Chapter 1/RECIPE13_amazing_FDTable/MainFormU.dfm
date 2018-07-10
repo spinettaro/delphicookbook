@@ -116,6 +116,7 @@ object MainForm: TMainForm
     TabOrder = 1
   end
   object DataSource1: TDataSource
+    DataSet = SalesTable
     Left = 440
     Top = 104
   end
@@ -130,12 +131,15 @@ object MainForm: TMainForm
   object EmployeeConnection: TFDConnection
     Params.Strings = (
       'ConnectionDef=EMPLOYEE')
+    Connected = True
     LoginPrompt = False
     Left = 516
     Top = 237
   end
   object SalesTable: TFDTable
     Connection = EmployeeConnection
+    UpdateOptions.UpdateTableName = 'SALES'
+    TableName = 'SALES'
     Left = 568
     Top = 320
   end
