@@ -3,11 +3,12 @@ unit MainFormU;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
 
 type
-  TMainForm = class(TForm)
+  TForm1 = class(TForm)
     Memo1: TMemo;
     btnGenerateJSON: TButton;
     btnModifyJSON: TButton;
@@ -23,15 +24,14 @@ type
   end;
 
 var
-  MainForm: TMainForm;
+  Form1: TForm1;
 
 implementation
 
+{$R *.dfm}
+
 uses
   System.JSON {WAS "Data.DBXJSON" in Delphi XE5};
-
-{$R *.dfm }
-
 
 type
   TCarInfo = (Manufacturer = 1, name = 2, Currency = 3, Price = 4);
@@ -64,7 +64,7 @@ var
     )
   );
 
-procedure TMainForm.btnGenerateJSONClick(Sender: TObject);
+procedure TForm1.btnGenerateJSONClick(Sender: TObject);
 var
   i: Integer;
   JSONCars: TJSONArray;
@@ -80,7 +80,8 @@ begin
       Car.AddPair('name', Cars[i][TCarInfo.Name]);
       Price := TJSONObject.Create;
       Car.AddPair('price', Price);
-      Price.AddPair('value', TJSONNumber.Create(Cars[i][TCarInfo.Price].ToInteger));
+      Price.AddPair('value', TJSONNumber.Create(Cars[i][TCarInfo.Price]
+        .ToInteger));
       Price.AddPair('currency', Cars[i][TCarInfo.Currency]);
     end;
     JSON := JSONCars.ToJSON;
@@ -89,7 +90,7 @@ begin
   end;
 end;
 
-procedure TMainForm.btnModifyJSONClick(Sender: TObject);
+procedure TForm1.btnModifyJSONClick(Sender: TObject);
 var
   JSONCars: TJSONArray;
   Car, Price: TJSONObject;
@@ -112,7 +113,7 @@ begin
   end;
 end;
 
-procedure TMainForm.btnParseJSONClick(Sender: TObject);
+procedure TForm1.btnParseJSONClick(Sender: TObject);
 var
   JSONCars: TJSONArray;
   i: Integer;
@@ -133,11 +134,9 @@ begin
       JSONPrice := Car.GetValue('price') as TJSONObject;
       CarPrice := (JSONPrice.GetValue('value') as TJSONNumber).AsDouble;
       CarCurrencyType := JSONPrice.GetValue('currency').Value;
-      s := s + Format(
-        'Name = %s' + sLineBreak +
-        'Manufacturer = %s' + sLineBreak +
-        'Price = %.0n%s' + sLineBreak +
-        '-----' + sLineBreak, [CarName, CarManufacturer, CarPrice, CarCurrencyType]);
+      s := s + Format('Name = %s' + sLineBreak + 'Manufacturer = %s' +
+        sLineBreak + 'Price = %.0n%s' + sLineBreak + '-----' + sLineBreak,
+        [CarName, CarManufacturer, CarPrice, CarCurrencyType]);
     end;
     JSON := s;
   finally
@@ -145,13 +144,13 @@ begin
   end;
 end;
 
-function TMainForm.GetJSON: string;
+function TForm1.GetJSON: string;
 begin
   Result := Memo1.Lines.Text;
 
 end;
 
-procedure TMainForm.SetJSON(const Value: string);
+procedure TForm1.SetJSON(const Value: string);
 begin
   Memo1.Lines.Text := Value;
 end;
