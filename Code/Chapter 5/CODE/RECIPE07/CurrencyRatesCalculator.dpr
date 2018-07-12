@@ -3,7 +3,7 @@ program CurrencyRatesCalculator;
 uses
   Vcl.Forms,
   MainFormU in 'MainFormU.pas' {MainForm},
-  AsyncTask in '..\RECIPE05\AsyncTask.pas';
+  AsyncTask in '..\RECIPE06\AsyncTask.pas';
 
 {$R *.res}
 

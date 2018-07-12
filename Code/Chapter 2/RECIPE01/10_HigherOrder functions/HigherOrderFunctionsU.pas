@@ -7,9 +7,12 @@ uses
 
 type
   HigherOrder = class sealed
-    class function Map<T>(InputArray: TArray<T>; MapFunction: TFunc<T, T>): TArray<T>;
-    class function Reduce<T: record >(InputArray: TArray<T>; ReduceFunction: TFunc<T, T, T>; InitValue: T): T;
-    class function Filter<T>(InputArray: TArray<T>; FilterFunction: TFunc<T, boolean>): TArray<T>;
+    class function Map<T>(InputArray: TArray<T>; MapFunction: TFunc<T, T>)
+      : TArray<T>;
+    class function Reduce<T: record >(InputArray: TArray<T>;
+      ReduceFunction: TFunc<T, T, T>; InitValue: T): T;
+    class function Filter<T>(InputArray: TArray<T>;
+      FilterFunction: TFunc<T, boolean>): TArray<T>;
   end;
 
 implementation
@@ -19,7 +22,8 @@ uses
 
 { HigherOrder }
 
-class function HigherOrder.Filter<T>(InputArray: TArray<T>; FilterFunction: TFunc<T, boolean>): TArray<T>;
+class function HigherOrder.Filter<T>(InputArray: TArray<T>;
+  FilterFunction: TFunc<T, boolean>): TArray<T>;
 var
   I: Integer;
   List: TList<T>;
@@ -35,7 +39,8 @@ begin
   end;
 end;
 
-class function HigherOrder.Map<T>(InputArray: TArray<T>; MapFunction: TFunc<T, T>): TArray<T>;
+class function HigherOrder.Map<T>(InputArray: TArray<T>;
+  MapFunction: TFunc<T, T>): TArray<T>;
 var
   I: Integer;
 begin
@@ -44,7 +49,8 @@ begin
     Result[I] := MapFunction(InputArray[I]);
 end;
 
-class function HigherOrder.Reduce<T>(InputArray: TArray<T>; ReduceFunction: TFunc<T, T, T>; InitValue: T): T;
+class function HigherOrder.Reduce<T>(InputArray: TArray<T>;
+  ReduceFunction: TFunc<T, T, T>; InitValue: T): T;
 var
   I: T;
 begin

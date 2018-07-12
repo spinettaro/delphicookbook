@@ -134,7 +134,7 @@ var
 begin
   LPOSTRequest := FHTTPClient.GetRequest('POST', BASEURL + '/people');
   LPOSTRequest.AddHeader('content-type', 'application/json');
-  LBody := TStringStream.Create(ADataSet.asJSONObjectString);
+  LBody := TStringStream.Create(ADataSet.AsJSONObject);
   try
     LPOSTRequest.SourceStream := LBody;
     LResponse := FHTTPClient.Execute(LPOSTRequest);
@@ -241,7 +241,7 @@ begin
   LPUTRequest := FHTTPClient.GetRequest('PUT', BASEURL + '/people/' +
     ADataSet.FieldByName('ID').AsString);
   LPUTRequest.AddHeader('content-type', 'application/json');
-  LBody := TStringStream.Create(ADataSet.asJSONObjectString);
+  LBody := TStringStream.Create(ADataSet.AsJSONObject);
   try
     LPUTRequest.SourceStream := LBody;
     LResponse := FHTTPClient.Execute(LPUTRequest);

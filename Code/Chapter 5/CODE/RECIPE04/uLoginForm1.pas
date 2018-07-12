@@ -17,7 +17,7 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes,
   System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Objects,
-  FMX.Layouts, uLoginFrame1, EventsU, EventBus.Attributes, EventBus.Commons;
+  FMX.Layouts, uLoginFrame1, EventsU, EventBus.Commons;
 
 type
   TForm1Login = class(TForm)
