@@ -40,10 +40,6 @@ object MainForm: TMainForm
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'List of entities'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object btnOpen: TButton
         Left = 3
         Top = 11
@@ -118,10 +114,6 @@ object MainForm: TMainForm
     object TabSheet2: TTabSheet
       Caption = 'Single entity'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label7: TLabel
         Left = 16
         Top = 80

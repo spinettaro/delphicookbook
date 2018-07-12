@@ -3,14 +3,14 @@ unit PersonBO;
 interface
 
 uses
-  System.SysUtils;
+  System.SysUtils, MVCFramework.Serializer.Commons;
 
 type
   EBLException = class(Exception)
 
   end;
 
-  [MapperJSONNaming(JSONNameLowerCase)]
+  [MVCNameCase(TMVCNameCase.ncAsIs)]
   TPerson = class
   private
     FWORK_PHONE_NUMBER: string;
