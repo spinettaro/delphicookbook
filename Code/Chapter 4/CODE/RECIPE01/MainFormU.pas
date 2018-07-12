@@ -55,7 +55,7 @@ end;
 procedure TMainForm.EditSearchKeyUp(Sender: TObject; var Key: Word; var KeyChar: Char; Shift: TShiftState);
 begin
   if Key = vkReturn then
-    DoSearch(Edit3.Text);
+    DoSearch(EditSearch.Text);
 end;
 
 end.
