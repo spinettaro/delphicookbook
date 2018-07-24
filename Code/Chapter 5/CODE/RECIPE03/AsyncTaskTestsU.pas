@@ -34,7 +34,6 @@ begin
     begin
       LHTTP := THTTPClient.Create;
       try
-        Assert.IsTrue(False);
         LResp := LHTTP.Get
           ('http://api.timezonedb.com/v2/get-time-zone?key=YOUR_API_KEY&format=json&by=zone&zone=Italy/Rome');
         if LResp.StatusCode = 200 then
