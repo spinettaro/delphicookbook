@@ -15,13 +15,13 @@ object MainForm: TMainForm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object redLedLabel: TLabel
+  object lightBulb1Label: TLabel
     AlignWithMargins = True
-    Left = 32
+    Left = 16
     Top = 16
-    Width = 122
+    Width = 171
     Height = 40
-    Caption = 'LED Red'
+    Caption = 'Light bulb 1'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
     Font.Height = 40
@@ -29,13 +29,13 @@ object MainForm: TMainForm
     Font.Style = []
     ParentFont = False
   end
-  object greenLEDLabel: TLabel
+  object lightBulb2Label: TLabel
     AlignWithMargins = True
-    Left = 240
+    Left = 264
     Top = 16
-    Width = 153
+    Width = 171
     Height = 40
-    Caption = 'LED Green'
+    Caption = 'Light bulb 2'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clLime
     Font.Height = 40
@@ -61,7 +61,7 @@ object MainForm: TMainForm
     TabOrder = 1
     OnClick = btnConnectionClick
   end
-  object redLEDSwitch: TToggleSwitch
+  object lightBulb1Switch: TToggleSwitch
     Left = 64
     Top = 80
     Width = 72
@@ -69,8 +69,8 @@ object MainForm: TMainForm
     ReadOnly = True
     TabOrder = 2
   end
-  object greenLEDSwitch: TToggleSwitch
-    Left = 280
+  object lightBulb2Switch: TToggleSwitch
+    Left = 320
     Top = 80
     Width = 72
     Height = 20

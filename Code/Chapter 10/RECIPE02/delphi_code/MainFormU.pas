@@ -9,19 +9,19 @@ uses
 
 type
   TMainForm = class(TForm)
-    redLEDSwitch: TToggleSwitch;
+    lightBulb1Switch: TToggleSwitch;
     ComPort1: TComPort;
     btnSetup: TButton;
     btnConnection: TButton;
-    redLedLabel: TLabel;
-    greenLEDLabel: TLabel;
-    greenLEDSwitch: TToggleSwitch;
+    lightBulb1Label: TLabel;
+    lightBulb2Label: TLabel;
+    lightBulb2Switch: TToggleSwitch;
     procedure btnSetupClick(Sender: TObject);
-    procedure redLEDSwitchClick(Sender: TObject);
+    procedure lightBulb1SwitchClick(Sender: TObject);
     procedure btnConnectionClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure greenLEDSwitchClick(Sender: TObject);
+    procedure lightBulb2SwitchClick(Sender: TObject);
   private
     { Private declarations }
     procedure UpdateComponentsState;
@@ -59,15 +59,14 @@ begin
   UpdateComponentsState;
 end;
 
-procedure TMainForm.greenLEDSwitchClick(Sender: TObject);
+procedure TMainForm.lightBulb2SwitchClick(Sender: TObject);
 begin
-  case greenLEDSwitch.State of
+  case lightBulb2Switch.State of
     tssOff:
-      ComPort1.WriteStr('GREEN_OFF');
+      ComPort1.WriteStr('L2_OFF');
     tssOn:
-      ComPort1.WriteStr('GREEN_ON');
+      ComPort1.WriteStr('L2_ON');
   end;
-
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -76,22 +75,22 @@ begin
     ComPort1.Close;
 end;
 
-procedure TMainForm.redLEDSwitchClick(Sender: TObject);
+procedure TMainForm.lightBulb1SwitchClick(Sender: TObject);
 begin
-  case redLEDSwitch.State of
+  case lightBulb1Switch.State of
     tssOff:
-      ComPort1.WriteStr('RED_OFF');
+      ComPort1.WriteStr('L1_OFF');
     tssOn:
-      ComPort1.WriteStr('RED_ON');
+      ComPort1.WriteStr('L1_ON');
   end;
 end;
 
 procedure TMainForm.UpdateComponentsState;
 begin
-  redLEDSwitch.Enabled := ComPort1.Connected;
-  greenLEDSwitch.Enabled := ComPort1.Connected;
-  redLedLabel.Enabled := ComPort1.Connected;
-  greenLEDLabel.Enabled := ComPort1.Connected;
+  lightBulb1Switch.Enabled := ComPort1.Connected;
+  lightBulb2Switch.Enabled := ComPort1.Connected;
+  lightBulb1Label.Enabled := ComPort1.Connected;
+  lightBulb2Label.Enabled := ComPort1.Connected;
   btnConnection.Caption := ifthen(ComPort1.Connected, 'Close', 'Open');
 end;
 

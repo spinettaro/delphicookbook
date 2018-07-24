@@ -1,17 +1,11 @@
 int relay_pin_1 = 8;
 int relay_pin_2 = 9;
-int led_pin_1 = 13;
-int led_pin_2 = 12;
 
 
 void setup() {
   // put your setup code here, to run once:
   pinMode(relay_pin_1, OUTPUT);
   pinMode(relay_pin_2, OUTPUT);
-  pinMode(led_pin_1, OUTPUT);
-  pinMode(led_pin_2, OUTPUT);
-  digitalWrite(led_pin_1, HIGH);
-  digitalWrite(led_pin_2, HIGH);
 
   digitalWrite(relay_pin_1, HIGH);
   digitalWrite(relay_pin_2, HIGH);
@@ -23,24 +17,24 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   delay(2000);
-  // turn red LED on
+  // turn light bulb 1 on
   digitalWrite(relay_pin_1, LOW);
-  Serial.print("R_ON");
+  Serial.print("L1_ON");
   delay(5000);
 
- // turn red LED off
+ // turn light bulb 1 off
   digitalWrite(relay_pin_1, HIGH);
-  Serial.print("R_OFF");
+  Serial.print("L1_OFF");
   delay(5000);
 
- // turn green LED on
+ // turn light bulb 2 on
   digitalWrite(relay_pin_2, LOW);
-  Serial.print("G_ON");
+  Serial.print("L2_ON");
   delay(5000);
 
- // turn green LED off
+ // turn light bulb 2 off
   digitalWrite(relay_pin_2, HIGH);
-  Serial.print("G_OFF");
+  Serial.print("L2_OFF");
   delay(5000);
 
 }

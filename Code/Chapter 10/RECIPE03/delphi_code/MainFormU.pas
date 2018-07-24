@@ -13,10 +13,10 @@ type
     ComPort1: TComPort;
     btnSetup: TButton;
     btnConnection: TButton;
-    redLedLabel: TLabel;
-    greenLEDLabel: TLabel;
-    redLEDSwitch: TToggleSwitch;
-    greenLEDSwitch: TToggleSwitch;
+    lightBulb1Label: TLabel;
+    lightBulb2Label: TLabel;
+    lightBulb1Switch: TToggleSwitch;
+    lightBulb2Switch: TToggleSwitch;
     procedure btnSetupClick(Sender: TObject);
     procedure btnConnectionClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -51,14 +51,14 @@ begin
   // Receives messages from Arduino.
   ComPort1.ReadStr(Str, Count);
 
-  if Str.ToUpper = 'R_ON' then
-    redLEDSwitch.State := TToggleSwitchState.tssOn
-  else if Str.ToUpper = 'R_OFF' then
-    redLEDSwitch.State := TToggleSwitchState.tssOff
-  else if Str.ToUpper = 'G_ON' then
-    greenLEDSwitch.State := TToggleSwitchState.tssOn
-  else if Str.ToUpper = 'G_OFF' then
-    greenLEDSwitch.State := TToggleSwitchState.tssOff;
+  if Str.ToUpper = 'L1_ON' then
+    lightBulb1Switch.State := TToggleSwitchState.tssOn
+  else if Str.ToUpper = 'L1_OFF' then
+    lightBulb1Switch.State := TToggleSwitchState.tssOff
+  else if Str.ToUpper = 'L2_ON' then
+    lightBulb2Switch.State := TToggleSwitchState.tssOn
+  else if Str.ToUpper = 'L2_OFF' then
+    lightBulb2Switch.State := TToggleSwitchState.tssOff;
 
 end;
 
@@ -85,10 +85,10 @@ end;
 
 procedure TMainForm.UpdateComponentsState;
 begin
-  redLEDSwitch.Enabled := ComPort1.Connected;
-  greenLEDSwitch.Enabled := ComPort1.Connected;
-  redLedLabel.Enabled := ComPort1.Connected;
-  greenLEDLabel.Enabled := ComPort1.Connected;
+  lightBulb1Switch.Enabled := ComPort1.Connected;
+  lightBulb2Switch.Enabled := ComPort1.Connected;
+  lightBulb1Label.Enabled := ComPort1.Connected;
+  lightBulb2Label.Enabled := ComPort1.Connected;
   btnConnection.Caption := ifthen(ComPort1.Connected, 'Close', 'Open');
 end;
 
