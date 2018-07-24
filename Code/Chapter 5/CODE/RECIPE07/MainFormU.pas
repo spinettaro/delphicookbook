@@ -36,9 +36,6 @@ uses
 
 {$R *.dfm}
 
-const
-  ACCESS_KEY = '58297a8c75e21d218b1da2c610b6f62c';
-
 procedure TMainForm.btnConvertClick(Sender: TObject);
 begin
   if not Assigned(FConversionRate) then
@@ -63,8 +60,7 @@ begin
     begin
       LHTTP := THTTPClient.Create;
       try
-        LResp := LHTTP.Get('http://data.fixer.io/api/latest?access_key=' +
-          ACCESS_KEY);
+        LResp := LHTTP.Get('https://exchangeratesapi.io/api/latest');
         LJObj := TJSONObject.ParseJSONValue
           (LResp.ContentAsString(TEncoding.UTF8)) as TJSONObject;
         try
@@ -111,8 +107,7 @@ begin
     begin
       LHTTP := THTTPClient.Create;
       try
-        LResp := LHTTP.Get(Format('http://data.fixer.io/api/latest?access_key='
-          + ACCESS_KEY + '&base=%s&symbols=EUR', [LBaseSymbol]));
+        LResp := LHTTP.Get(Format('https://exchangeratesapi.io/api/latest?&base=%s&symbols=EUR', [LBaseSymbol]));
         LJObj := TJSONObject.ParseJSONValue
           (LResp.ContentAsString(TEncoding.UTF8)) as TJSONObject;
         try
