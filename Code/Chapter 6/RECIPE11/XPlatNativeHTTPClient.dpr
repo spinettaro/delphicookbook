@@ -5,7 +5,7 @@ uses
   FMX.Forms,
   MainFormU in 'MainFormU.pas' {MainForm},
   HTTPLayerDMU in 'HTTPLayerDMU.pas' {HTTPDM: TDataModule},
-  AsyncTask in '..\..\..\Chapter05\CODE\RECIPE05\AsyncTask.pas';
+  AsyncTask in '..\..\Chapter 5\CODE\RECIPE06\AsyncTask.pas';
 
 {$R *.res}
 

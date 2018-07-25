@@ -84,7 +84,7 @@ object MainForm: TMainForm
       Touch.InteractiveGestures = [LongTap, DoubleTap]
       Align = VertCenter
       TabOrder = 3
-      Text = 'danieleteti'
+      Text = 'spinettaro'
       Position.X = 10.000000000000000000
       Position.Y = 218.204727172851600000
       Margins.Left = 10.000000000000000000
