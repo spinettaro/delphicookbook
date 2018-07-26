@@ -3,11 +3,11 @@ unit PersonBO;
 interface
 
 uses
-  MVCFramework.Commons;
+  MVCFramework.Commons, MVCFramework.Serializer.Commons;
 
 type
 
-  [MapperJSONNaming(JSONNameLowerCase)]
+  [MVCNameCase(TMVCNameCase.ncAsIs)]
   TPerson = class
   private
     FWORK_PHONE_NUMBER: String;
