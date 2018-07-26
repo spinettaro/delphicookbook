@@ -45,7 +45,7 @@ var
 
 const
   // get your own APPID here http://openweathermap.org/appid
-  APPID = '05ccda731b87c262a622f20bcecc1026';
+  APPID = 'your-app-id';
 
 implementation
 
