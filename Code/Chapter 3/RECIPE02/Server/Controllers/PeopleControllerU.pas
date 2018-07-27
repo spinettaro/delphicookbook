@@ -20,34 +20,34 @@ type
   public
     [MVCPath]
     [MVCHTTPMethod([httpGET])]
-    procedure GetPeople(CTX: TWebContext);
+    procedure GetPeople();
 
     [MVCPath('/searches')]
     [MVCHTTPMethod([httpPOST, httpGET])]
     [MVCConsumes('application/json')]
-    procedure SearchPeople(CTX: TWebContext);
+    procedure SearchPeople();
 
     [MVCPath('/($id)')]
     [MVCHTTPMethod([httpGET])]
-    procedure GetPersonByID(CTX: TWebContext);
+    procedure GetPersonByID(id: Integer);
 
     [MVCPath('/($id)/photo')]
     [MVCHTTPMethod([httpGET])]
-    procedure GetPersonPhotoByID(CTX: TWebContext);
+    procedure GetPersonPhotoByID(id: Integer);
 
     [MVCPath]
     [MVCHTTPMethod([httpPOST])]
     [MVCConsumes('application/json')]
-    procedure CreatePerson(CTX: TWebContext);
+    procedure CreatePerson();
 
     [MVCPath('/($id)')]
     [MVCHTTPMethod([httpPUT])]
     [MVCConsumes('application/json')]
-    procedure UpdatePerson(CTX: TWebContext);
+    procedure UpdatePerson(id: Integer);
 
     [MVCPath('/($id)')]
     [MVCHTTPMethod([httpDELETE])]
-    procedure DeletePerson(CTX: TWebContext);
+    procedure DeletePerson(id: Integer);
   end;
 
 implementation
@@ -58,16 +58,16 @@ uses
 
 { TPeopleController }
 
-procedure TPeopleController.CreatePerson(CTX: TWebContext);
+procedure TPeopleController.CreatePerson();
 var
   Person: TPerson;
 begin
-  Person := CTX.Request.BodyAs<TPerson>;
+  Person := Context.Request.BodyAs<TPerson>;
   try
     FPeopleModule.CreatePerson(Person);
 
     // return the link to the newly created resource
-    CTX.Response.Location := '/people/' + Person.ID;
+    Context.Response.Location := '/people/' + Person.ID;
 
     Render(HTTP_STATUS.Created, 'Person created');
   finally
@@ -75,13 +75,13 @@ begin
   end;
 end;
 
-procedure TPeopleController.UpdatePerson(CTX: TWebContext);
+procedure TPeopleController.UpdatePerson(id: Integer);
 var
   Person: TPerson;
 begin
-  Person := CTX.Request.BodyAs<TPerson>;
+  Person := Context.Request.BodyAs<TPerson>;
   try
-    Person.ID := CTX.Request.Params['id'];
+    Person.ID := id.ToString;
     FPeopleModule.UpdatePerson(Person);
     Render(HTTP_STATUS.OK, 'Person updated');
   finally
@@ -89,24 +89,24 @@ begin
   end;
 end;
 
-procedure TPeopleController.DeletePerson(CTX: TWebContext);
+procedure TPeopleController.DeletePerson(id: Integer);
 begin
-  FPeopleModule.DeletePerson(CTX.Request.ParamsAsInteger['id']);
+  FPeopleModule.DeletePerson(id);
   Render(HTTP_STATUS.NoContent, 'Person deleted');
 end;
 
-procedure TPeopleController.GetPersonByID(CTX: TWebContext);
+procedure TPeopleController.GetPersonByID(id: Integer);
 var
   Person: TPerson;
 begin
-  Person := FPeopleModule.GetPersonByID(CTX.Request.ParamsAsInteger['id']);
+  Person := FPeopleModule.GetPersonByID(id);
   if Assigned(Person) then
     Render(Person)
   else
     Render(HTTP_STATUS.NotFound, 'Person not found');
 end;
 
-procedure TPeopleController.GetPersonPhotoByID(CTX: TWebContext);
+procedure TPeopleController.GetPersonPhotoByID(id: Integer);
 var
   LPNGImage: TPNGImage;
   LPerson: TPerson;
@@ -114,7 +114,7 @@ var
   LBase64Stream: TMemoryStream;
 begin
   // get the person object
-  LPerson := FPeopleModule.GetPersonByID(CTX.Request.ParamsAsInteger['id']);
+  LPerson := FPeopleModule.GetPersonByID(id);
   if not Assigned(LPerson) then
     raise EMVCException.Create('Person not found', '', 404, 404);
   try
@@ -198,7 +198,7 @@ begin
   Result := LPNGImage;
 end;
 
-procedure TPeopleController.GetPeople(CTX: TWebContext);
+procedure TPeopleController.GetPeople();
 begin
   Render<TPerson>(FPeopleModule.GetPeople);
 end;
@@ -219,25 +219,25 @@ begin
 {$ENDIF}
 end;
 
-procedure TPeopleController.SearchPeople(CTX: TWebContext);
+procedure TPeopleController.SearchPeople();
 var
   LFilters: TJSONObject;
   LSearchText: string;
   LCurrPage: Integer;
 begin
-  case CTX.Request.HTTPMethod of
+  case Context.Request.HTTPMethod of
     httpPOST:
       begin
-        LFilters := TJSONObject.ParseJSONValue(CTX.Request.Body) as TJSONObject;
+        LFilters := TJSONObject.ParseJSONValue(Context.Request.Body) as TJSONObject;
         if not Assigned(LFilters) then
           raise Exception.Create('Invalid search parameters');
         LSearchText := TSystemJSON.GetStringDef(LFilters, 'TEXT');
       end;
     httpGET:
       begin
-        if not CTX.Request.QueryStringParamExists('query') then
+        if not Context.Request.QueryStringParamExists('query') then
           raise Exception.Create('Invalid search parameters');
-        LSearchText := CTX.Request.Params['query']
+        LSearchText := Context.Request.Params['query']
       end;
   else
     begin
@@ -245,14 +245,14 @@ begin
     end;
   end;
 
-  if (not TryStrToInt(CTX.Request.Params['page'], LCurrPage)) or (LCurrPage < 1) then
+  if (not TryStrToInt(Context.Request.Params['page'], LCurrPage)) or (LCurrPage < 1) then
     LCurrPage := 1;
   ResponseStatus(HTTP_STATUS.OK);
   Render<TPerson>(FPeopleModule.FindPeople(LSearchText, LCurrPage));
-  CTX.Response.CustomHeaders.Values['dmvc-next-people-page'] :=
+  Context.Response.CustomHeaders.Values['dmvc-next-people-page'] :=
     Format('/people/searches?page=%d', [LCurrPage + 1]);
   if LCurrPage > 1 then
-    CTX.Response.CustomHeaders.Values['dmvc-prev-people-page'] :=
+    Context.Response.CustomHeaders.Values['dmvc-prev-people-page'] :=
       Format('/people/searches?page=%d', [LCurrPage - 1]);
 end;
 

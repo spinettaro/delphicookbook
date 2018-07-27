@@ -109,7 +109,6 @@ begin
       dsPerson.BeforePost := nil;
       dsPerson.Insert;
       dsPerson.LoadFromJSONObjectString(LResponse.ContentAsString);
-      dsPerson.Post;
       dsPerson.BeforePost := dsPersonBeforePost;
     end
     else
@@ -134,7 +133,7 @@ var
 begin
   LPOSTRequest := FHTTPClient.GetRequest('POST', BASEURL + '/people');
   LPOSTRequest.AddHeader('content-type', 'application/json');
-  LBody := TStringStream.Create(ADataSet.AsJSONObject);
+  LBody := TStringStream.Create(ADataSet.AsJSONObject, TEncoding.UTF8);
   try
     LPOSTRequest.SourceStream := LBody;
     LResponse := FHTTPClient.Execute(LPOSTRequest);
@@ -241,7 +240,7 @@ begin
   LPUTRequest := FHTTPClient.GetRequest('PUT', BASEURL + '/people/' +
     ADataSet.FieldByName('ID').AsString);
   LPUTRequest.AddHeader('content-type', 'application/json');
-  LBody := TStringStream.Create(ADataSet.AsJSONObject);
+  LBody := TStringStream.Create(ADataSet.AsJSONObject, TEncoding.UTF8);
   try
     LPUTRequest.SourceStream := LBody;
     LResponse := FHTTPClient.Execute(LPUTRequest);
