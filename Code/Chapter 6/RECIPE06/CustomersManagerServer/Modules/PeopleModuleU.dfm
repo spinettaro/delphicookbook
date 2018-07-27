@@ -44,7 +44,9 @@ object PeopleModule: TPeopleModule
   end
   object Conn: TFDConnection
     Params.Strings = (
-      'Database=C:\Delphi Cookbook\BOOK\Chapter05\DATA\SAMPLES.IB'
+      
+        'Database=D:\Books\Delphi Cookbook 3rd Edition\delphicookbook\Cod' +
+        'e\Chapter 6\DATA\SAMPLES.IB'
       'User_Name=sysdba'
       'Password=masterkey'
       'DriverID=IB')

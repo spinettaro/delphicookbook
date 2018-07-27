@@ -71,10 +71,10 @@ var
 begin
   RESTRequest1.ClearBody;
   PersonJSON := '{"FIRST_NAME":"Daniele", ' +
-    '"LAST_NAME":"Teti",' +
+    '"LAST_NAME":"Spinetti",' +
     '"WORK_PHONE_NUMBER":"(555) 1234578",' +
     '"MOBILE_PHONE_NUMBER":"(456) 98765432",' +
-    '"EMAIL":"daniele.teti@gmail.com"}';
+    '"EMAIL":"d.spinetti@bittime.it"}';
   RESTRequest1.Resource := 'people';
   RESTRequest1.AddBody(PersonJSON, TRESTContentType.ctAPPLICATION_JSON);
   RESTRequest1.Method := TRESTRequestMEthod.rmPOST;
@@ -90,10 +90,10 @@ begin
   id := InputBox('PUT parameter', 'Which person?', '1');
   RESTRequest1.ClearBody;
   PersonJSON := '{"FIRST_NAME":"Daniele", ' +
-    '"LAST_NAME":"Teti",' +
+    '"LAST_NAME":"Spinetti",' +
     '"WORK_PHONE_NUMBER":"UPDATED",' +
     '"MOBILE_PHONE_NUMBER":"UPDATED",' +
-    '"EMAIL":"daniele.teti@gmail.com"}';
+    '"EMAIL":"d.spinetti@bittime.it"}';
   RESTRequest1.Resource := 'people/{id}';
   RESTRequest1.AddParameter('id', id, TRESTRequestParameterKind.pkURLSEGMENT);
   RESTRequest1.AddBody(PersonJSON, TRESTContentType.ctAPPLICATION_JSON);

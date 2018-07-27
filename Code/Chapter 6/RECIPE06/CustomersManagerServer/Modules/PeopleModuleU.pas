@@ -69,8 +69,8 @@ function TPeopleModule.FindPeople(ASearchText: String; APage: Integer)
 var
   StartRec, EndRec: Integer;
 begin
-  Dec(APage); // page 0 => 0, 9, page 1 => 10, 19, page 3 => 20, 29
-  StartRec := (10 * APage);
+  Dec(APage); // page 0 => 1, 9, page 1 => 10, 19, page 3 => 20, 29
+  StartRec := (10 * APage) + 1;
   EndRec := StartRec + 10 - 1;
   qryPeople.Open('SELECT * FROM PEOPLE WHERE ' +
     'FIRST_NAME CONTAINING :SEARCH_TEXT_1 OR ' +

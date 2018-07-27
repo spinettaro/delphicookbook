@@ -23,7 +23,7 @@ type
 
     [MVCPath('/($id)')]
     [MVCHTTPMethod([httpGET])]
-    procedure GetPersonByID;
+    procedure GetPersonByID(id: Integer);
 
     [MVCPath]
     [MVCHTTPMethod([httpPOST])]
@@ -33,11 +33,11 @@ type
     [MVCPath('/($id)')]
     [MVCHTTPMethod([httpPUT])]
     [MVCConsumes('application/json')]
-    procedure UpdatePerson;
+    procedure UpdatePerson(id: Integer);
 
     [MVCPath('/($id)')]
     [MVCHTTPMethod([httpDELETE])]
-    procedure DeletePerson;
+    procedure DeletePerson(id: Integer);
 
     [MVCPath('/searches')]
     [MVCHTTPMethod([httpPOST])]
@@ -67,13 +67,13 @@ begin
   end;
 end;
 
-procedure TPeopleController.UpdatePerson;
+procedure TPeopleController.UpdatePerson(id: Integer);
 var
   Person: TPerson;
 begin
   Person := Context.Request.BodyAs<TPerson>;
   try
-    Person.ID := Context.Request.ParamsAsInteger['id'];
+    Person.ID := id;
     FPeopleModule.UpdatePerson(Person);
     Render(200, 'Person updated');
   finally
@@ -81,17 +81,17 @@ begin
   end;
 end;
 
-procedure TPeopleController.DeletePerson;
+procedure TPeopleController.DeletePerson(id: Integer);
 begin
-  FPeopleModule.DeletePerson(Context.Request.ParamsAsInteger['id']);
+  FPeopleModule.DeletePerson(id);
   Render(204, 'Person deleted');
 end;
 
-procedure TPeopleController.GetPersonByID;
+procedure TPeopleController.GetPersonByID(id: Integer);
 var
   Person: TPerson;
 begin
-  Person := FPeopleModule.GetPersonByID(Context.Request.ParamsAsInteger['id']);
+  Person := FPeopleModule.GetPersonByID(id);
   if Assigned(Person) then
     Render(Person)
   else
