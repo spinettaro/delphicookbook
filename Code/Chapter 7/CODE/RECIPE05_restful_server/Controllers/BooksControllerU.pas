@@ -21,7 +21,7 @@ type
     procedure GetBooks;
     [MVCPath('/($id)')]
     [MVCHTTPMethod([httpGET])]
-    procedure GetBookByID;
+    procedure GetBookByID(id: Integer);
     [MVCPath]
     [MVCHTTPMethod([httpPOST])]
     [MVCConsumes('application/json')]
@@ -29,10 +29,10 @@ type
     [MVCPath('/($id)')]
     [MVCHTTPMethod([httpPUT])]
     [MVCConsumes('application/json')]
-    procedure UpdateBook;
+    procedure UpdateBook(id: Integer);
     [MVCPath('/($id)')]
     [MVCHTTPMethod([httpDELETE])]
-    procedure DeleteBook;
+    procedure DeleteBook(id: Integer);
   end;
 
 implementation
@@ -50,13 +50,13 @@ begin
   Render(201, 'Book created');
 end;
 
-procedure TBooksController.UpdateBook;
+procedure TBooksController.UpdateBook(id: Integer);
 var
   Book: TBook;
 begin
   Book := Context.Request.BodyAs<TBook>;
   try
-    Book.ID := Context.Request.ParamsAsInteger['id'];
+    Book.ID := id;
     FBookModule.UpdateBook(Book);
     Render(200, 'Book updated');
   finally
@@ -64,17 +64,17 @@ begin
   end;
 end;
 
-procedure TBooksController.DeleteBook;
+procedure TBooksController.DeleteBook(id: Integer);
 begin
-  FBookModule.DeleteBook(Context.Request.ParamsAsInteger['id']);
+  FBookModule.DeleteBook(id);
   Render(204, 'Book deleted');
 end;
 
-procedure TBooksController.GetBookByID;
+procedure TBooksController.GetBookByID(id: Integer);
 var
   Book: TBook;
 begin
-  Book := FBookModule.GetBookByID(Context.Request.ParamsAsInteger['id']);
+  Book := FBookModule.GetBookByID(id);
   if Assigned(Book) then
     Render(Book, false)
   else

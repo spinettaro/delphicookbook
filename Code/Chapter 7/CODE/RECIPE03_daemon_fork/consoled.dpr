@@ -18,7 +18,7 @@ const
   EXIT_SUCCESS = 0;
 
 var
-  pid: Integer;
+  ProcessID: Integer;
   SID: Integer;
   I: Integer;
   idx: Integer;
@@ -39,11 +39,11 @@ begin
   try
     // Fork off the parent process
     Log('2. BEFORE FORK ');
-    pid := fork();
-    if (pid < 0) then
-      raise Exception.Create('Error in forking the process');
-    // If we got a good PID, then we can KILL the parent process.
-    if (pid > 0) then
+    ProcessID := fork();
+    if (ProcessID < 0) then
+      raise Exception.Create('Error. Cannot fork the process');
+    // If we got a good ProcessID, then we can KILL the parent process.
+    if (ProcessID > 0) then
     begin
       Log('3. INTO FORK - PARENT PROCESS - EXIT SUCCESS');
       Halt(EXIT_SUCCESS);
@@ -54,17 +54,15 @@ begin
     // Change the file mode mask
     umask(0);
 
-    // Open any logs here
-
     // Create a new SID for the child process
     SID := setsid();
     if (SID < 0) then
-      raise Exception.Create('Error in creating an independent session');
+      raise Exception.Create('Error in creating a new SID');
 
     // Change the current working directory
     // ATTENTION -- for demo purpose comment the line below to
     // make sure that the log files are written to the same level of application file
-    chdir('/');
+    // chdir('/');
 
     // Close out the standard file descriptors
     for idx := sysconf(_SC_OPEN_MAX) downto 0 do

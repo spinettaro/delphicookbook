@@ -14,7 +14,7 @@ type
     [MVCPath('/users')]
     [MVCHTTPMethods([httpGET])]
     [MVCDoc('Returns the users list')]
-    procedure GetUsers(CTX: TWebContext);
+    procedure GetUsers;
 
     [MVCPath('/users')]
     [MVCHTTPMethods([httpPOST])]
@@ -42,7 +42,7 @@ begin
     raise EMVCException.Create(HTTP_STATUS.BadRequest, 'Expected JSON body');
 end;
 
-procedure TSampleController.GetUsers(CTX: TWebContext);
+procedure TSampleController.GetUsers;
 var
   LJObj: TJSONObject;
   LJArray: TJSONArray;
