@@ -1,4 +1,4 @@
-program ArduinoMultipleRelais;
+program ArduinoMultipleRelays;
 
 uses
   Vcl.Forms,
