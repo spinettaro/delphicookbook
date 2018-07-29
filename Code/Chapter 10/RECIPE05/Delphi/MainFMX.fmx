@@ -31,7 +31,7 @@ object MainForm: TMainForm
       Size.PlatformDefault = False
       TextSettings.Font.Size = 25.000000000000000000
       TextSettings.HorzAlign = Center
-      Text = 'Raspberry PI Multiple Relais'
+      Text = 'Raspberry PI Multiple Relays'
       TabOrder = 0
     end
   end

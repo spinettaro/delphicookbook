@@ -1,4 +1,4 @@
-program RPIMultipleRelais;
+program RPIMultipleRelays;
 
 uses
   System.StartUpCopy,
